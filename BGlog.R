@@ -46,6 +46,20 @@ Last4WeeksBG = BG[BG$Date>start & BG$Date<end,]
 
 timeOfDay = as.POSIXct(strftime(Last4WeeksBG$Date, format="%H:%M:%S"), format="%H:%M:%S")
 
-p=xyplot(Last4WeeksBG$Value ~ timeOfDay | as.Date(Last4WeeksBG$Date), pch=19, xlab="Time", ylab="BG value (mmol/l)", main="Derek Johnson Daily BG levels for past 4 weeks", as.table=TRUE)
+mealtimes=c(as.POSIXct("08:00", format="%H:%M"),
+            as.POSIXct("12:00", format="%H:%M"),
+            as.POSIXct("18:00", format="%H:%M"))
+
+print(mealtimes)
+
+p = xyplot(Last4WeeksBG$Value ~ timeOfDay | as.Date(Last4WeeksBG$Date),
+  pch=19, xlab="Time", ylab="BG value (mmol/l)",
+  main="Derek Johnson Daily BG levels for past 4 weeks", as.table=TRUE,
+  panel = function(...) {
+    panel.abline(h=c(4,8), v=mealtimes, col='lightgrey', lty='dotted')
+
+    panel.xyplot(...)
+  }
+  )
 
 print(p)
