@@ -46,4 +46,6 @@ Last4WeeksBG = BG[BG$Date>start & BG$Date<end,]
 
 timeOfDay = as.POSIXct(strftime(Last4WeeksBG$Date, format="%H:%M:%S"), format="%H:%M:%S")
 
-xyplot(Last4WeeksBG$Value ~ as.POSIXct(strftime(Last4WeeksBG$Date, format="%H:%M:%S"), format="%H:%M:%S") | as.Date(Last4WeeksBG$Date), pch=19, xlab="Time", ylab="BG value (mmol/l)", main="Derek Johnson Daily BG levels for past 4 weeks")
+p=xyplot(Last4WeeksBG$Value ~ timeOfDay | as.Date(Last4WeeksBG$Date), pch=19, xlab="Time", ylab="BG value (mmol/l)", main="Derek Johnson Daily BG levels for past 4 weeks", as.table=TRUE)
+
+print(p)
