@@ -39,8 +39,8 @@ Activity = log[log$Type=='A',]
 ##   start = start + 3600 * 24
 ## }
 
-end = Sys.time()
-start = end - 3600 * 24 * 28 # 4 weeks ago
+end = tail(BG$Date, 1)
+start = end - 3600 * 24 * 27 # 4 weeks ago
 
 Last4WeeksBG = BG[BG$Date>start & BG$Date<end,]
 
@@ -50,8 +50,8 @@ mealtimes=c(as.POSIXct("08:00", format="%H:%M"),
             as.POSIXct("12:00", format="%H:%M"),
             as.POSIXct("18:00", format="%H:%M"))
 
-p = xyplot(Last4WeeksBG$Value ~ timeOfDay | as.Date(Last4WeeksBG$Date),
-  pch=3, xlab="Time", ylab="BG value (mmol/l)",
+p = xyplot(Last4WeeksBG$Value ~ timeOfDay | format(as.Date(Last4WeeksBG$Date), "%m-%d %a"),
+  pch=19, xlab="Time", ylab="BG value (mmol/l)", layout=c(7,4),
   main="Derek Johnson Daily BG levels for past 4 weeks", as.table=TRUE,
   panel = function(...) {
     panel.abline(h=c(4,8), v=mealtimes, col='lightgrey', lty='dotted')
