@@ -28,8 +28,11 @@ BG = BG[BG$Date>=start & BG$Date<=end,]
 # lunch and tea (8am, noon and 6pm respectively).
 mealtimes=lapply(c("8", "12", "18"), as.POSIXct, format="%H")
 
+Day = format(as.Date(BG$Date.Time), "%a %d %B")
+Day = factor(Day, levels = unique(Day))
+
 p = xyplot(Value ~ as.POSIXct(strftime(Date.Time, format="%H:%M"), format="%H:%M") |
-  format(as.Date(Date.Time), "%m-%d %a"), data=BG,
+  Day, data=BG,
   pch=19, xlab="Time", ylab="BG value (mmol/l)", layout=c(7,4),
   main="Derek Johnson Daily BG levels for previous 28 days", as.table=TRUE,
   panel = function(x, y, ...) {
