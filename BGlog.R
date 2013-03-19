@@ -33,8 +33,8 @@ Day = factor(Day, levels = unique(Day))
 
 p = xyplot(Value ~ as.POSIXct(strftime(Date.Time, format="%H:%M"), format="%H:%M") |
   Day, data=BG,
-  pch=19, xlab="Time", ylab="BG value (mmol/l)", layout=c(7,4),
-  main="Derek Johnson Daily BG levels for previous 28 days", as.table=TRUE,
+  pch=19, xlab="Time", ylab="BG value (mmol/l)", layout=c(7,4), as.table=TRUE,
+  main=list(label="Derek Johnson Daily BG levels for previous 28 days", cex=0.75),
   panel = function(x, y, ...) {
     panel.abline(h=c(4,8), v=mealtimes, col='lightgrey', lty='dotted')
     #ltext(x=x, y=y, labels=BG$Event, pos=4, offset=0.25, cex=0.7)
