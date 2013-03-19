@@ -16,23 +16,26 @@ Humalog  = log[log$Type=='M' & log$Name=='Humalog',]
 Lantus   = log[log$Type=='M' & log$Name=='Lantus',]
 Activity = log[log$Type=='A',]
 
+# Get the date of the last entry
 end = tail(BG$Date, 1)
-start = end - 3600 * 24 * 27 # 4 weeks ago
+# Get the start date as 27 days before the end date
+start = end - 3600 * 24 * 27
 
-Last4WeeksBG = BG[BG$Date>=start & BG$Date<=end,]
+# Curtail the BG readings to be between the start and end dates
+BG = BG[BG$Date>=start & BG$Date<=end,]
 
-timeOfDay = as.POSIXct(strftime(Last4WeeksBG$Date, format="%H:%M:%S"), format="%H:%M:%S")
+timeOfDay = as.POSIXct(strftime(BG$Date, format="%H:%M:%S"), format="%H:%M:%S")
 
 mealtimes=c(as.POSIXct("08:00", format="%H:%M"),
             as.POSIXct("12:00", format="%H:%M"),
             as.POSIXct("18:00", format="%H:%M"))
 
-p = xyplot(Last4WeeksBG$Value ~ timeOfDay | format(as.Date(Last4WeeksBG$Date), "%m-%d %a"),
+p = xyplot(BG$Value ~ timeOfDay | format(as.Date(BG$Date), "%m-%d %a"),
   pch=19, xlab="Time", ylab="BG value (mmol/l)", layout=c(7,4),
-  main="Derek Johnson Daily BG levels for past 4 weeks", as.table=TRUE,
+  main="Derek Johnson Daily BG levels for previous 28 days", as.table=TRUE,
   panel = function(x, y, ...) {
     panel.abline(h=c(4,8), v=mealtimes, col='lightgrey', lty='dotted')
-    #ltext(x=x, y=y, labels=Last4WeeksBG$Event, pos=4, offset=0.25, cex=0.7)
+    #ltext(x=x, y=y, labels=BG$Event, pos=4, offset=0.25, cex=0.7)
     panel.xyplot(x, y, ...)
   }  )
 print(p)
