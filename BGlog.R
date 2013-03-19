@@ -24,13 +24,12 @@ start = end - 3600 * 24 * 27
 # Curtail the BG readings to be between the start and end dates
 BG = BG[BG$Date>=start & BG$Date<=end,]
 
-timeOfDay = as.POSIXct(strftime(BG$Date, format="%H:%M:%S"), format="%H:%M:%S")
-
 # Add lines to each graph representing typical times for breakfast,
 # lunch and tea (8am, noon and 6pm respectively).
 mealtimes=lapply(c("8", "12", "18"), as.POSIXct, format="%H")
 
-p = xyplot(BG$Value ~ timeOfDay | format(as.Date(BG$Date), "%m-%d %a"),
+p = xyplot(Value ~ as.POSIXct(strftime(Date.Time, format="%H:%M"), format="%H:%M") |
+  format(as.Date(Date.Time), "%m-%d %a"), data=BG,
   pch=19, xlab="Time", ylab="BG value (mmol/l)", layout=c(7,4),
   main="Derek Johnson Daily BG levels for previous 28 days", as.table=TRUE,
   panel = function(x, y, ...) {
