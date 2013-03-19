@@ -26,9 +26,9 @@ BG = BG[BG$Date>=start & BG$Date<=end,]
 
 timeOfDay = as.POSIXct(strftime(BG$Date, format="%H:%M:%S"), format="%H:%M:%S")
 
-mealtimes=c(as.POSIXct("08:00", format="%H:%M"),
-            as.POSIXct("12:00", format="%H:%M"),
-            as.POSIXct("18:00", format="%H:%M"))
+# Add lines to each graph representing typical times for breakfast,
+# lunch and tea (8am, noon and 6pm respectively).
+mealtimes=lapply(c("8", "12", "18"), as.POSIXct, format="%H")
 
 p = xyplot(BG$Value ~ timeOfDay | format(as.Date(BG$Date), "%m-%d %a"),
   pch=19, xlab="Time", ylab="BG value (mmol/l)", layout=c(7,4),
