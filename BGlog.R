@@ -32,7 +32,7 @@ Day = format(as.Date(BG$Date.Time), "%A %d %B")
 Day = factor(Day, levels = unique(Day))
 
 p = xyplot(Value ~ as.POSIXct(strftime(Date.Time, format="%H:%M"), format="%H:%M") |
-  Day, data=BG,
+  Day, data=BG, scales=list(x=list( format="%I%p" ), y=list(at=c(4,8,12,16))),
   pch=19, xlab="Time", ylab="BG value (mmol/l)", layout=c(7,4), as.table=TRUE,
   main=list(label="Derek Johnson Daily BG levels for previous 28 days", cex=0.75),
   panel = function(x, y, ...) {
@@ -40,6 +40,5 @@ p = xyplot(Value ~ as.POSIXct(strftime(Date.Time, format="%H:%M"), format="%H:%M
     #ltext(x=x, y=y, labels=BG$Event, pos=4, offset=0.25, cex=0.7)
     panel.xyplot(x, y, ...)
   }  )
+
 print(p)
-#axis.POSIXct(1, at=seq(as.POSIXct("00:00", format="%H:%M"), as.POSIXct("23:00", format="%H:%M"), by="hour"),
-#             format="%H")
