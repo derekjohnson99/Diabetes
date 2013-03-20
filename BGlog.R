@@ -28,7 +28,12 @@ BG = BG[BG$Date>=start & BG$Date<=end,]
 # lunch and tea (8am, noon and 6pm respectively).
 mealtimes=lapply(c("8", "12", "18"), as.POSIXct, format="%H")
 
+# Use the date part of the Date.Time as the conditioning variable for the xyplot
 Day = format(as.Date(BG$Date.Time), "%A %d %B")
+
+# The xyplot function will factor the date automatically, but will
+# sort it alphabetically, so we need to factor it manually and ensure
+# it is sorted chronologically.
 Day = factor(Day, levels = unique(Day))
 
 p = xyplot(Value ~ as.POSIXct(strftime(Date.Time, format="%H:%M"), format="%H:%M") |
@@ -37,7 +42,6 @@ p = xyplot(Value ~ as.POSIXct(strftime(Date.Time, format="%H:%M"), format="%H:%M
   main=list(label="Derek Johnson Daily BG levels for previous 28 days", cex=0.75),
   panel = function(x, y, ...) {
     panel.abline(h=c(4,8), v=mealtimes, col='lightgrey', lty='dotted')
-    #ltext(x=x, y=y, labels=BG$Event, pos=4, offset=0.25, cex=0.7)
     panel.xyplot(x, y, ...)
   }  )
 
