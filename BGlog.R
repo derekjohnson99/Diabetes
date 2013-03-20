@@ -1,3 +1,16 @@
+# BGlog.R
+#
+# An R script to plot daily blood glucose values for the last 28 days
+# of values taken from the results log exported from the Glucose Buddy
+# website.
+#
+# Author: Derek Johnson
+
+# To do:
+#     - Label each point with its event type (e.g. "Before Breakfast").
+#     - Add indications that horizontal lines represent "hyper" and
+#       "hypo" regions.
+
 require("lattice")
 
 # Clear all objects
