@@ -7,17 +7,24 @@
 # Description: Read Exported Glucose Buddy log and print table of BG values.
 import sys
 import csv
+import datetime
 from pprint import pprint
 
 logfile = open("/Users/derekjohnson/Dropbox/Diabetes/MyExportedGlucoseBuddyLogs.csv")
 
 def extract_date(date_time = '03/14/2007 09:15:00'):
     '''Extract the date from the date-time string'''
-    return date_time[:10]
+    year = int(date_time[6:10])
+    month = int(date_time[0:2])
+    day = int(date_time[3:5])
+    return datetime.date(year, month, day)
 
 def extract_time(date_time = '03/14/2007 09:25:00'):
     '''Extract the date from the date-time string'''
-    return date_time[11:-3]
+    hour = int(date_time[11:13])
+    minute = int(date_time[14:16])
+    sec = int(date_time[17:19])
+    return datetime.time(hour, minute, sec)
 
 class BGreading():
     def __init__(self, value, date_time, event):
