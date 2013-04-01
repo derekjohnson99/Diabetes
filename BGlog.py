@@ -33,18 +33,21 @@ class BGreading():
         self.time = extract_time(date_time)
         self.event = event
     def toString(self):
-        return "%s: %s %2.1f [%s]" % (self.date, self.time, self.value, self.event)
+        return "%s: %2.1f [%s]" % (self.time, self.value, self.event)
+    def getDate(self):
+        return self.date.__str__()
 
 if __name__ == "__main__":
-    BGreadings = []
+    BGreadings = {}
     try:
         reader = csv.DictReader(logfile)
         for row in reader:
             if row['Type'] == 'BG':
-                BGreadings.append(BGreading(row['Value'], row['Date Time'], row['Event']))
-                #print "%s %0.1f %s" % (row['Date Time'], float(row['Value']), row['Event'])
+                reading = BGreading(row['Value'], row['Date Time'], row['Event'])
+                date = reading.getDate()
+                BGreadings[date] = BGreadings.get(date, [])
+                BGreadings[date].append(reading.toString())
     finally:
         logfile.close()
 
-for reading in BGreadings:
-    print reading.toString()
+    pprint(BGreadings)
