@@ -10,7 +10,7 @@ import csv
 import datetime
 from pprint import pprint
 
-logfile = open("/Users/derekjohnson/Dropbox/Diabetes/MyExportedGlucoseBuddyLogs.csv")
+logfile = "/Users/derekjohnson/Dropbox/Diabetes/MyExportedGlucoseBuddyLogs.csv"
 
 def extract_date(date_time = '03/14/2007 09:15:00'):
     '''Extract the date from the date-time string'''
@@ -46,6 +46,17 @@ class BGreading(object):
         noon = datetime.time(12, 0, 0)
         return (self.time < noon)
 
+def ReadGlucoseBuddyLogFile(logfilename):
+    Readings = []
+    try:
+        f = open(logfilename)
+        reader = csv.DictReader(f)
+        for row in reader:
+            Readings.append(row)
+    finally:
+        f.close()
+    return Readings    
+    
 if __name__ == "__main__":
     event_order = ['Out Of Bed',
                    'During Night',
@@ -57,14 +68,7 @@ if __name__ == "__main__":
                    'After Dinner',
                    'Before Bed']
 
-    Readings = []
-    try:
-        reader = csv.DictReader(logfile)
-        for row in reader:
-            Readings.append(row)
-    finally:
-        logfile.close()
-
+    Readings = ReadGlucoseBuddyLogFile(logfile)
     #pprint(Readings)
     
     BGreadings = {}
