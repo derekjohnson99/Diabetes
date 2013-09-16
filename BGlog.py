@@ -56,23 +56,27 @@ if __name__ == "__main__":
                    'Before Dinner',
                    'After Dinner',
                    'Before Bed']
-    BGreadings = {}
+
     Readings = []
     try:
         reader = csv.DictReader(logfile)
         for row in reader:
             Readings.append(row)
-            if row['Type'] == 'BG':
-                reading = BGreading(row['Value'], row['Date Time'], row['Event'])
-                date = str(reading.getDate())
-                BGreadings[date] = BGreadings.get(date, [])
-                BGreadings[date].append(reading)
     finally:
         logfile.close()
 
-    #pprint(BGreadings)
     #pprint(Readings)
     
+    BGreadings = {}
+    for reading in Readings:
+        if reading['Type'] == 'BG':
+            bgReading = BGreading(reading['Value'], reading['Date Time'], reading['Event'])
+            date = str(bgReading.getDate())
+            BGreadings[date] = BGreadings.get(date, [])
+            BGreadings[date].append(bgReading)
+
+    #pprint(BGreadings)
+
     print "Date,%s" % ','.join(event_order)
     dates = BGreadings.keys()
     dates.sort()
