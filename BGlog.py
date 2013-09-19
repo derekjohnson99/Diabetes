@@ -81,6 +81,15 @@ if __name__ == "__main__":
 
     #pprint(BGreadings)
 
+    DailyReadings = {}
+
+    for reading in Readings:
+        date = str(extract_date(reading['Date Time']))
+        DailyReadings[date] = DailyReadings.get(date, [])
+        DailyReadings[date].append(reading)
+
+        #pprint(DailyReadings)
+    
     print "Date,%s" % ','.join(event_order)
     dates = BGreadings.keys()
     dates.sort()
