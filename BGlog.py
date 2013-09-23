@@ -56,7 +56,30 @@ def ReadGlucoseBuddyLogFile(logfilename):
     finally:
         f.close()
     return Readings    
-    
+
+def GenerateBGReadings(Readings):
+    BGreadings = {}
+
+    for reading in Readings:
+        if reading['Type'] == 'BG':
+            bgReading = BGreading(reading['Value'], reading['Date Time'], reading['Event'])
+            date = str(bgReading.getDate())
+            BGreadings[date] = BGreadings.get(date, [])
+            BGreadings[date].append(bgReading)
+
+    return BGreadings
+
+
+def GenerateDailyReadings(Readings):
+    DailyReadings = {}
+
+    for reading in Readings:
+        date = str(extract_date(reading['Date Time']))
+        DailyReadings[date] = DailyReadings.get(date, [])
+        DailyReadings[date].append(reading)
+
+    return DailyReadings
+
 if __name__ == "__main__":
     event_order = ['Out Of Bed',
                    'During Night',
@@ -71,24 +94,11 @@ if __name__ == "__main__":
     Readings = ReadGlucoseBuddyLogFile(logfile)
     #pprint(Readings)
     
-    BGreadings = {}
-    for reading in Readings:
-        if reading['Type'] == 'BG':
-            bgReading = BGreading(reading['Value'], reading['Date Time'], reading['Event'])
-            date = str(bgReading.getDate())
-            BGreadings[date] = BGreadings.get(date, [])
-            BGreadings[date].append(bgReading)
-
+    BGreadings = GenerateBGReadings(Readings)
     #pprint(BGreadings)
 
-    DailyReadings = {}
-
-    for reading in Readings:
-        date = str(extract_date(reading['Date Time']))
-        DailyReadings[date] = DailyReadings.get(date, [])
-        DailyReadings[date].append(reading)
-
-        #pprint(DailyReadings)
+    DailyReadings = GenerateDailyReadings(Readings)
+    #pprint(DailyReadings)
     
     print "Date,%s" % ','.join(event_order)
     dates = BGreadings.keys()
@@ -104,3 +114,4 @@ if __name__ == "__main__":
         for e in event_order:
             line.append("|".join(events.get(e, '')))
         print "%s,%s" % (date, ','.join(line))
+    
