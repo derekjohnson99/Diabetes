@@ -12,39 +12,24 @@ from pprint import pprint
 
 logfile = "/Users/derekjohnson/Dropbox/Diabetes/MyExportedGlucoseBuddyLogs.csv"
 
-def extract_date(date_time = '03/14/2007 09:15:00'):
-    '''Extract the date from the date-time string'''
-    year = int(date_time[6:10])
-    month = int(date_time[0:2])
-    day = int(date_time[3:5])
-    return datetime.date(year, month, day)
-
-def extract_time(date_time = '03/14/2007 09:25:00'):
-    '''Extract the date from the date-time string'''
-    hour = int(date_time[11:13])
-    minute = int(date_time[14:16])
-    sec = int(date_time[17:19])
-    return datetime.time(hour, minute, sec)
-
 class BGreading(object):
     def __init__(self, value, date_time, event):
         self.value = float(value)
-        self.date = extract_date(date_time)
-        self.time = extract_time(date_time)
+        self.datetime = datetime.datetime.strptime(date_time, "%m/%d/%Y %H:%M:%S")
         self.event = event
     def toString(self):
         return "%s: %2.1f" % (self.event, self.value)
     def getValue(self):
         return self.value
     def getDate(self):
-        return self.date
+        return self.datetime.date()
     def getEvent(self):
         return self.event
     def getTime(self):
-        return self.time
+        return self.datetime.time()
     def beforeNoon(self):
         noon = datetime.time(12, 0, 0)
-        return (self.time < noon)
+        return (self.getTime() < noon)
 
 def ReadGlucoseBuddyLogFile(logfilename):
     Readings = []
@@ -69,12 +54,11 @@ def GenerateBGReadings(Readings):
 
     return BGreadings
 
-
 def GenerateDailyReadings(Readings):
     DailyReadings = {}
 
     for reading in Readings:
-        date = str(extract_date(reading['Date Time']))
+        date = str(datetime.datetime.strptime(reading['Date Time'], "%m/%d/%Y %H:%M:%S").date())
         DailyReadings[date] = DailyReadings.get(date, [])
         DailyReadings[date].append(reading)
 
