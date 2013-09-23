@@ -59,7 +59,7 @@ def GenerateDailyReadings(Readings):
     DailyReadings = {}
 
     for reading in Readings:
-        date = reading['Date Time'].date()
+        date = str(reading['Date Time'].date())
         DailyReadings[date] = DailyReadings.get(date, [])
         DailyReadings[date].append(reading)
 
@@ -96,7 +96,7 @@ def PrintBGReadingsCSV(BGreadings):
 
 if __name__ == "__main__":
     Readings = ReadGlucoseBuddyLogFile(logfile)
-    #pprint(Readings)
+    #pprint([ r for r in Readings if r['Type'] == 'BG' ])
     
     BGreadings = GenerateBGReadings(Readings)
     #pprint(BGreadings)
