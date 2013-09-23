@@ -15,7 +15,7 @@ logfile = "/Users/derekjohnson/Dropbox/Diabetes/MyExportedGlucoseBuddyLogs.csv"
 class BGreading(object):
     def __init__(self, value, date_time, event):
         self.value = float(value)
-        self.datetime = datetime.datetime.strptime(date_time, "%m/%d/%Y %H:%M:%S")
+        self.datetime = date_time
         self.event = event
     def toString(self):
         return "%s: %2.1f" % (self.event, self.value)
@@ -37,6 +37,7 @@ def ReadGlucoseBuddyLogFile(logfilename):
         f = open(logfilename)
         reader = csv.DictReader(f)
         for row in reader:
+            row['Date Time'] = datetime.datetime.strptime(row['Date Time'], "%m/%d/%Y %H:%M:%S")
             Readings.append(row)
     finally:
         f.close()
@@ -58,7 +59,7 @@ def GenerateDailyReadings(Readings):
     DailyReadings = {}
 
     for reading in Readings:
-        date = str(datetime.datetime.strptime(reading['Date Time'], "%m/%d/%Y %H:%M:%S").date())
+        date = reading['Date Time'].date()
         DailyReadings[date] = DailyReadings.get(date, [])
         DailyReadings[date].append(reading)
 
