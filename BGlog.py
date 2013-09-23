@@ -80,7 +80,8 @@ def GenerateDailyReadings(Readings):
 
     return DailyReadings
 
-if __name__ == "__main__":
+def PrintBGReadingsCSV(BGreadings):
+
     event_order = ['Out Of Bed',
                    'During Night',
                    'Before Breakfast',
@@ -91,16 +92,9 @@ if __name__ == "__main__":
                    'After Dinner',
                    'Before Bed']
 
-    Readings = ReadGlucoseBuddyLogFile(logfile)
-    #pprint(Readings)
-    
-    BGreadings = GenerateBGReadings(Readings)
-    #pprint(BGreadings)
-
-    DailyReadings = GenerateDailyReadings(Readings)
-    #pprint(DailyReadings)
-    
+    # Print the CSV file header
     print "Date,%s" % ','.join(event_order)
+    
     dates = BGreadings.keys()
     dates.sort()
     for date in dates:
@@ -114,4 +108,15 @@ if __name__ == "__main__":
         for e in event_order:
             line.append("|".join(events.get(e, '')))
         print "%s,%s" % (date, ','.join(line))
+
+if __name__ == "__main__":
+    Readings = ReadGlucoseBuddyLogFile(logfile)
+    #pprint(Readings)
     
+    BGreadings = GenerateBGReadings(Readings)
+    #pprint(BGreadings)
+
+    DailyReadings = GenerateDailyReadings(Readings)
+    #pprint(DailyReadings)
+
+    PrintBGReadingsCSV(BGreadings)
