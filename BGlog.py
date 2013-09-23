@@ -46,12 +46,10 @@ def ReadGlucoseBuddyLogFile(logfilename):
 def GenerateBGReadings(Readings):
     BGreadings = {}
 
-    for reading in Readings:
-        if reading['Type'] == 'BG':
-            bgReading = BGreading(reading)
-            date = str(bgReading.getDate())
-            BGreadings[date] = BGreadings.get(date, [])
-            BGreadings[date].append(bgReading)
+    for bgReading in [ BGreading(r) for r in Readings if r['Type'] == 'BG' ]:
+        date = str(bgReading.getDate())
+        BGreadings[date] = BGreadings.get(date, [])
+        BGreadings[date].append(bgReading)
 
     return BGreadings
 
