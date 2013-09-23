@@ -13,10 +13,10 @@ from pprint import pprint
 logfile = "/Users/derekjohnson/Dropbox/Diabetes/MyExportedGlucoseBuddyLogs.csv"
 
 class BGreading(object):
-    def __init__(self, value, date_time, event):
-        self.value = float(value)
-        self.datetime = date_time
-        self.event = event
+    def __init__(self, reading):
+        self.value = float(reading['Value'])
+        self.datetime = reading['Date Time'] 
+        self.event = reading['Event']
     def toString(self):
         return "%s: %2.1f" % (self.event, self.value)
     def getValue(self):
@@ -48,7 +48,7 @@ def GenerateBGReadings(Readings):
 
     for reading in Readings:
         if reading['Type'] == 'BG':
-            bgReading = BGreading(reading['Value'], reading['Date Time'], reading['Event'])
+            bgReading = BGreading(reading)
             date = str(bgReading.getDate())
             BGreadings[date] = BGreadings.get(date, [])
             BGreadings[date].append(bgReading)
