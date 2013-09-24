@@ -92,6 +92,33 @@ def PrintBGReadingsCSV(BGreadings):
             line.append("|".join(events.get(e, '')))
         print "%s,%s" % (date, ','.join(line))
 
+def PrintHourlyBGReadingsCSV(BGreadings):
+    # Print BG Readings on an hour by hour basis
+    '''
+    Output to CSV file.
+    Open CSV file in Excel.
+
+    Use the following conditional formatting rules to highlight weekends,
+    hypos, good values and hyper:
+
+    Cell value between 8.5 and 10  - yellow fill with yellow text
+    Cell value between 4.1 and 8.5 - green fill with green text
+    Cell value between 0.1 and 4.0 - red fill
+    formula: weekday($a2,2)>5      - light grey fill
+    '''
+
+    hours = [ datetime.time(h, 0, 0) for h in xrange(24) ]
+
+    print "Date,%s" % ','.join([ "%02d:00" % x.hour for x in hours ])
+    dates = BGreadings.keys()
+    dates.sort()
+    for date in dates:
+        hour_val = [ "" for x in xrange(24) ]
+        for reading in BGreadings[date]:
+            hour_val[ reading.getTime().hour ] = str(reading.getValue())
+        
+        print "%s,%s" % (date, ','.join(hour_val))
+
 if __name__ == "__main__":
     Readings = ReadGlucoseBuddyLogFile(logfile)
     #pprint([ r for r in Readings if r['Type'] == 'BG' ])
@@ -103,3 +130,5 @@ if __name__ == "__main__":
     #pprint(DailyReadings)
 
     PrintBGReadingsCSV(BGreadings)
+    
+    #PrintHourlyBGReadingsCSV(BGreadings)
