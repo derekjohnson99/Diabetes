@@ -10,6 +10,12 @@ import csv
 import datetime
 from pprint import pprint
 
+from reportlab.pdfgen.canvas import Canvas
+from reportlab.lib.units import cm, mm, inch, pica
+from reportlab.lib.pagesizes import letter, A4, landscape, portrait
+
+width, height = portrait(A4)
+
 logfile = "/Users/derekjohnson/Dropbox/Diabetes/MyExportedGlucoseBuddyLogs.csv"
 
 class BGreading(object):
@@ -31,6 +37,49 @@ class BGreading(object):
         noon = datetime.time(12, 0, 0)
         return (self.getTime() < noon)
 
+def GetCoordsFromDate(date_time):
+    startOfDay = date_time.replace(hour=0, minute=0, second=0)
+    x = ((date_time - startOfDay).seconds / 86400.0) * (width - 4.0) + 2.0
+    y = height - (date_time.day * 26) - 19
+    return (x, y)
+
+def GenerateFortnightPDF(DailyReadings, start, pdf):
+
+    # Draw a border
+    pdf.line(2, 2, 2, height-2)
+    pdf.line(2, height-2, width-2, height-2)
+    pdf.line(width-2, 2, width-2, height-2)
+    pdf.line(2, 2, width-2, 2)
+
+    # Write header
+    title = "Derek Johnson diabetes management %s" % (start.strftime("%B %Y"))
+    pdf.setFont("Times-Roman", 18)
+    pdf.drawCentredString(width/2.0, height-24, title)
+
+    # Write hour headings
+    for hour in range(3, 23, 3):
+        pdf.drawCentredString((hour / 24.0) * (width - 4.0) + 2.0, height - 48, "%02d" % hour)
+
+    # Write dates
+    date = start
+    current_line = height - 72
+    for i in range(14):
+        pdf.setFillColorRGB(0.75, 0.75, 0.75)
+        pdf.setFont("Times-Roman", 18)
+        pdf.drawString(0.2 * cm, current_line, date.strftime("%d %a"))
+        pdf.setFillColorRGB(0, 0, 0)
+        pdf.setFont("Helvetica", 10)
+        for reading in DailyReadings[str(date)]:
+            c = GetCoordsFromDate(reading['Date Time'])
+            if reading['Type'] == 'BG':
+                pdf.drawCentredString(c[0], current_line, "%s" % reading['Value'])
+            if reading['Type'] == 'M' and reading['Name'] == 'Humalog':
+                pdf.drawCentredString(c[0], current_line - 12, "%d" % int(float(reading['Value'])))
+        pdf.line(2, current_line - 2, width-2, current_line - 2)
+        date = date + datetime.timedelta(days=1)
+        current_line = current_line - 52
+    
+    
 def ReadGlucoseBuddyLogFile(logfilename):
     Readings = []
     try:
@@ -129,6 +178,11 @@ if __name__ == "__main__":
     DailyReadings = GenerateDailyReadings(Readings)
     #pprint(DailyReadings)
 
-    PrintBGReadingsCSV(BGreadings)
+    #PrintBGReadingsCSV(BGreadings)
     
     #PrintHourlyBGReadingsCSV(BGreadings)
+
+    pdf = Canvas("BG_Readings.pdf", pagesize = portrait(A4))
+    GenerateFortnightPDF(DailyReadings, datetime.date(2013, 8, 1), pdf)
+    pdf.showPage()
+    pdf.save()
