@@ -1,2 +1,6 @@
 MyExportedGlucoseBuddyLogs.csv
 BloodPressureOnLisinopril.pdf
+
+*.pdf
+
+BG_Readings.pdf

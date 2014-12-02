@@ -11,6 +11,7 @@ import datetime
 from pprint import pprint
 
 from reportlab.pdfgen.canvas import Canvas
+from reportlab.lib import colors
 from reportlab.lib.units import cm, mm, inch, pica
 from reportlab.lib.pagesizes import letter, A4, landscape, portrait
 
@@ -52,30 +53,45 @@ def GenerateFortnightPDF(DailyReadings, start, pdf):
     pdf.line(2, 2, width-2, 2)
 
     # Write header
-    title = "Derek Johnson diabetes management %s" % (start.strftime("%B %Y"))
+    title = "Derek Johnson diabetes management %s" % (start.strftime("%d %B %Y"))
     pdf.setFont("Times-Roman", 18)
     pdf.drawCentredString(width/2.0, height-24, title)
 
-    # Write hour headings
-    for hour in range(3, 23, 3):
-        pdf.drawCentredString((hour / 24.0) * (width - 4.0) + 2.0, height - 48, "%02d" % hour)
+    # Write key
+    pdf.setStrokeColor(colors.lightgrey)
+    pdf.line(40, 50, 130, 50)
+    pdf.setFont("Helvetica", 10)
+    pdf.drawString(50, 54, "BG (mmol/l)")
+    pdf.drawString(50, 41, "Humalog (units)")
 
+    # Write hour headings
+    pdf.setFont("Helvetica", 12)
+    hours = { 3: "3am", 6: "6am", 9: "9am", 12: "Noon", 15: "3pm", 18: "6pm", 21: "9pm"}
+    for hour in hours.keys():
+        pdf.drawCentredString((hour / 24.0) * (width - 4.0) + 2.0, height - 48, "%s" % hours[hour])
+
+    x6 = (6.0 / 24.0) * (width - 4.0) + 2.0
+    x12 = (12.0 / 24.0) * (width - 4.0) + 2.0
+    x18 = (18.0 / 24.0) * (width - 4.0) + 2.0
+    pdf.setStrokeColor(colors.lightgrey)
+    [ pdf.line(x, 2, x, height - 72) for x in [x6, x12, x18] ] 
+    
     # Write dates
     date = start
     current_line = height - 72
     for i in range(14):
-        pdf.setFillColorRGB(0.75, 0.75, 0.75)
+        pdf.setFillColor(colors.lightgrey)
+        pdf.line(2, current_line - 2, width-2, current_line - 2)
         pdf.setFont("Times-Roman", 18)
-        pdf.drawString(0.2 * cm, current_line, date.strftime("%d %a"))
-        pdf.setFillColorRGB(0, 0, 0)
+        pdf.drawString(0.2 * cm, current_line, date.strftime("%a %d/%m"))
+        pdf.setFillColor(colors.black)
         pdf.setFont("Helvetica", 10)
         for reading in DailyReadings[str(date)]:
             c = GetCoordsFromDate(reading['Date Time'])
             if reading['Type'] == 'BG':
-                pdf.drawCentredString(c[0], current_line, "%s" % reading['Value'])
+                pdf.drawCentredString(c[0], current_line + 1, "%s" % reading['Value'])
             if reading['Type'] == 'M' and reading['Name'] == 'Humalog':
-                pdf.drawCentredString(c[0], current_line - 12, "%d" % int(float(reading['Value'])))
-        pdf.line(2, current_line - 2, width-2, current_line - 2)
+                pdf.drawCentredString(c[0], current_line - 11, "%d" % int(float(reading['Value'])))
         date = date + datetime.timedelta(days=1)
         current_line = current_line - 52
     
@@ -181,8 +197,10 @@ if __name__ == "__main__":
     #PrintBGReadingsCSV(BGreadings)
     
     #PrintHourlyBGReadingsCSV(BGreadings)
-
-    pdf = Canvas("BG_Readings.pdf", pagesize = portrait(A4))
-    GenerateFortnightPDF(DailyReadings, datetime.date(2013, 8, 1), pdf)
-    pdf.showPage()
-    pdf.save()
+    startdate = datetime.date(2014, 9, 14)
+    for i in range(1):
+        pdf = Canvas("BG_Readings%s.pdf" % startdate.strftime("%d%b"), pagesize = portrait(A4))
+        GenerateFortnightPDF(DailyReadings, startdate, pdf)
+        pdf.showPage()
+        pdf.save()
+        startdate += + datetime.timedelta(days=14)
