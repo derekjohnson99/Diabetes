@@ -197,7 +197,7 @@ if __name__ == "__main__":
     #PrintBGReadingsCSV(BGreadings)
     
     #PrintHourlyBGReadingsCSV(BGreadings)
-    startdate = datetime.date(2014, 9, 14)
+    startdate = datetime.date.today() - datetime.timedelta(days=14)
     for i in range(1):
         pdf = Canvas("BG_Readings%s.pdf" % startdate.strftime("%d%b"), pagesize = portrait(A4))
         GenerateFortnightPDF(DailyReadings, startdate, pdf)
